@@ -626,9 +626,16 @@
   </ItemGroup>
 
   <Target Name="CopyToGameDir" AfterTargets="Build">
+    <ItemGroup>
+      <FilesToCopy Include="$(OutputPath)$(TargetName)$(TargetExt)" />
+      <FilesToCopy Include="$(OutputPath)$(TargetName).pdb" />
+    </ItemGroup>
     <Message Importance="high" Text="Copying to game directory" />
-    <Copy SourceFiles="$(OutputPath)$(TargetName)$(TargetExt)" DestinationFolder="$(GameDir)\BepInEx\plugins\" ContinueOnError="false" />
-    <Copy SourceFiles="$(OutputPath)$(TargetName).pdb" DestinationFolder="$(GameDir)\BepInEx\plugins\" ContinueOnError="false" />
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(GameDir)\BepInEx\plugins\" ContinueOnError="false" />
     <Message Importance="high" Text="Files copied" />
+    <Message Importance="high" Text="Creating Zip" />
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(OutputPath)\Artifact\BepInEx\plugins\" ContinueOnError="false" />
+    <ZipDirectory DestinationFile="$(OutputPath)\$(TargetName)-$(Version).zip" SourceDirectory="$(OutputPath)\Artifact" Overwrite="true"/>
+    <Message Importance="high" Text="Plugin Zipped" />
   </Target>
 </Project>
