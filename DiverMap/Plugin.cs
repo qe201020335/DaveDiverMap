@@ -5,6 +5,8 @@ using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using Il2CppInterop.Runtime.Injection;
+using Il2CppInterop.Runtime.InteropTypes;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -20,6 +22,8 @@ public class Plugin : BasePlugin
     
     internal static ManualLogSource Logger { get; private set; } = null!;
     
+    private Configuration _config = null!;
+    
     private Camera? _miniMapCamera;
     
     private GameObject? _miniMap;
@@ -27,13 +31,24 @@ public class Plugin : BasePlugin
     public override void Load()
     {
         // Plugin startup logic
-        Logger = Log;
         Instance = this;
+        Logger = Log;
+        _config = Configuration.Create(Config);
+
+        var assembly = Assembly.GetExecutingAssembly();
+        
+        // Register IL2CPP classes
+        Logger.LogInfo("Registering IL2CPP classes");
+        foreach (var type in assembly.GetTypes().Where(t => t.IsAssignableTo(typeof(Il2CppObjectBase))))
+        {
+            Logger.LogDebug("Registering type: " + type.FullName);
+            ClassInjector.RegisterTypeInIl2Cpp(type);
+        }
 
         UnityAction<Scene, Scene> a = new Action<Scene, Scene>(OnActiveSceneChanged);
         SceneManager.add_activeSceneChanged(a);
 
-        Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), MyPluginInfo.PLUGIN_GUID);
+        Harmony.CreateAndPatchAll(assembly, MyPluginInfo.PLUGIN_GUID);
         
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
     }
@@ -193,13 +208,13 @@ public class Plugin : BasePlugin
         image.texture = texture;
         
         _miniMap = miniMap;
+        _miniMapCamera.gameObject.AddComponent<MapManager>().Init(rectTransform, _config);
     }
 }
 
 [HarmonyPatch(typeof(HUDRoot), "Awake")]
 public static class HudRootPatch
 {
-    
     [HarmonyPostfix]
     private static void Postfix(HUDRoot __instance)
     {
