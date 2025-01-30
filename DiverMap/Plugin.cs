@@ -66,6 +66,7 @@ public class Plugin : BasePlugin
 
         var isGame = context.IsCurrentSceneIngameType;
         Logger.LogInfo($"IsCurrentSceneIngameType: {isGame}");
+        Logger.LogInfo($"SceneType: {context.SceneType}");
     }
     
     /**
@@ -219,6 +220,28 @@ public static class HudRootPatch
     private static void Postfix(HUDRoot __instance)
     {
         Plugin.Logger.LogInfo("HUDRoot Awake!");
+        
+        var context = SceneContext.Instance;
+        if (context == null)
+        {
+            Plugin.Logger.LogWarning("SceneContext is null!");
+            return;
+        }
+
+        var isGame = context.IsCurrentSceneIngameType;
+        
+        if (!isGame)
+        {
+            Plugin.Logger.LogDebug("Not in game scene!");
+            return;
+        }
+
+        if (context.SceneType is SceneType.village or SceneType.village_inside)
+        {
+            Plugin.Logger.LogDebug("Not creating minimap in village scene!");
+            return;
+        }
+        
         Plugin.Instance.CreateMinimap(__instance);
     }
 }
