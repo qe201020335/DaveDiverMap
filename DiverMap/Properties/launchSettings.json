@@ -1,0 +1,13 @@
+﻿{
+  "profiles": {
+    "DAVE THE DIVER": {
+      "commandName": "Executable",
+      "executablePath": "$(GameDir)\\DaveTheDiver.exe",
+      "commandLineArgs": "",
+      "workingDirectory": "$(GameDir)",
+      "environmentVariables": {
+        "SteamAppId": "1868140"
+      }
+    }
+  }
+}
