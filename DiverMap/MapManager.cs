@@ -19,7 +19,7 @@ public class MapManager: MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M) && Time.time - _keyDownTime > 0.1f)
+        if ((Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.JoystickButton6)) && Time.time - _keyDownTime > 0.1f)
         {
             _config.ShowMiniMap = !_config.ShowMiniMap;
             _miniMap.gameObject.active = _config.ShowMiniMap;
