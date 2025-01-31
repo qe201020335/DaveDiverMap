@@ -106,7 +106,7 @@ public class Plugin : BasePlugin
             return;
         }
         
-        _mapManager = AddComponent<MapManager>();
+        _mapManager = new GameObject("MiniMapManager").AddComponent<MapManager>();
         _mapManager.Init(hudRoot, _config);
     }
 }
