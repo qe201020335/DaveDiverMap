@@ -7,7 +7,7 @@ A simple minimap mod for the game Dave the Diver.
 3. Press "M" to show or hide the map. (Only active underwater)
 
 ## TODO
-- Configurable size
+- ~~Configurable size~~
+- ~~Configurable zoom~~
 - Configurable position
-- Configurable zoom
 - Better visibility
