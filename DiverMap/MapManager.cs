@@ -19,8 +19,6 @@ public class MapManager: MonoBehaviour
     
     private GameObject _miniMapGameObject = null!;
     
-    private float _keyDownTime;
-    
     private float _currentZoom;
     
     internal void Init(HUDRoot hudRoot, Configuration config)
@@ -135,11 +133,33 @@ public class MapManager: MonoBehaviour
 
     private void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.JoystickButton6)) && Time.time - _keyDownTime > 0.1f)
+        if (Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.JoystickButton6))
         {
             _config.ShowMiniMap = !_config.ShowMiniMap;
             _miniMapGameObject.active = _config.ShowMiniMap;
-            _keyDownTime = Time.time;
+        }
+
+        if (_miniMapGameObject.active)
+        {
+            if (Input.GetKeyDown(KeyCode.Keypad5))
+            {
+                // reset
+                _currentZoom = 1;
+            }
+            else
+            {
+                if (Input.GetKeyDown(KeyCode.Keypad9))
+                {
+                    _currentZoom += 0.1f;
+                } 
+                else if (Input.GetKeyDown(KeyCode.Keypad7))
+                {
+                    _currentZoom -= 0.1f;
+                }
+            }
+            
+            _currentZoom = Mathf.Clamp(_currentZoom, 0.25f, 4f);
+            _miniMapCamera.orthographicSize = BaseOrthoSize / _currentZoom;
         }
     }
 }
